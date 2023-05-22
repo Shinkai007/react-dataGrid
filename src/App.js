@@ -256,22 +256,51 @@ function Table() {
                 }
             ]
         }
-
+    //扁平化
+    const flattenedData1 = data.map(item => ({
+        ...item,
+        rate: item.rating.rate,
+        count: item.rating.count,
+    }));
+    //去除rating项
+    const flattenedData = flattenedData1.map(({ rating, ...rest }) => rest);
+    // 控制台添加输出项
+    const handleClick=({id,title})=>{
+        console.log("You've clicked", id, "-", title);
+    }
+    // 添加emoji
+    function addEmoji(rate) {
+        switch (true) {
+            case rate >= 0 && rate <= 1:
+                return "☹ " + rate;
+            case rate > 1 && rate <= 3:
+                return "👴" + rate;
+            case rate > 3 && rate <= 5:
+                return "☺ " + rate;
+            default:
+                return rate;
+        }
+    }
     return (
         <table className="table">
             <thead>
             <tr>
-                {Object.keys(data[0]).map((column, index) => (
+                {Object.keys(flattenedData[0]).map((column, index) => (
                     <th key={index}>{column}</th>
                 ))}
             </tr>
             </thead>
             <tbody>
-            {data.map((row) => (
-                <tr key={row.id}>
-                    {Object.values(row).map((value, index) => (
-                        <td key={index}>{typeof value === 'object' ? JSON.stringify(value) : value}</td>
-                    ))}
+            {flattenedData.map((row) => (
+                <tr key={row.id} onClick={()=>handleClick({id:row.id,title:row.title})}>
+                    {Object.values(row).map((value, index) => {
+                            if (index===6){
+                                return <td key={index}>{addEmoji(value)}</td>
+                            }else{
+                                return <td key={index}>{typeof value === 'object' ? JSON.stringify(value) : value}</td>
+                            }
+                        }
+                    )}
                 </tr>
             ))}
             </tbody>
